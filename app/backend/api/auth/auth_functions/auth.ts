@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import jwt from 'jsonwebtoken';
 import {Prisma} from '@prisma/client'
+import prisma from '@/lib/prisma'
 import twilio from 'twilio'
 
 type OTP = {
-    id : string,
     otp : string,
     email : string
 }
@@ -13,7 +13,6 @@ export async function auth(req : Request){
     const jsonData = await req.json();
 
     const email = jsonData.email;
-    const otp = jsonData.pass;
 
     if(await checkUser(email)){
         const generateOtp = await generate_otp_and_send(email);
@@ -33,7 +32,7 @@ export async function addUser(req : Request){
         await prisma?.user.create({
             data : userData
         })
-        return NextResponse.json({status : 200});
+        return NextResponse.json({message : "You are now a user"},{status : 200});
     }catch(error){
         return NextResponse.json({message : error});
     }
@@ -53,7 +52,7 @@ async function generateToken(email : string){
     }
     const token = jwt.sign(payload, process.env.JWT_SECRET_KEY!, {expiresIn : "60m"});
 
-    return token;
+    return NextResponse.json({token : token}, {status : 200});
 }
 
 async function generate_otp_and_send(email: string) {
@@ -87,13 +86,14 @@ async function sendEmail(message: string, phone_number: String) {
 export async function verifyOtp(req : Request){
     const jsonData = await req.json();
     const email = jsonData.email;
+    const enteredOTP = jsonData.otp;
     try{
         const otpFromData = await prisma?.user.findFirst({
              where : {email: email}
         })
         const decode  = jwt.verify(otpFromData?.otp!, process.env.OTP_SECRET_KEY!) as OTP;
 
-        if(decode.otp === jsonData.otp){
+        if(decode.otp === enteredOTP){
             return generateToken(email);
         }else {
             return NextResponse.json({message : "Invlid"},{status : 403})
