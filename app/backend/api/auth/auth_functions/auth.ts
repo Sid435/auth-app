@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import jwt from 'jsonwebtoken';
 import {Prisma} from '@prisma/client'
+import twilio from 'twilio'
 
 type OTP = {
     id : string,
@@ -16,7 +17,7 @@ export async function auth(req : Request){
 
     if(await checkUser(email)){
         const generateOtp = await generate_otp_and_send(email);
-        return NextResponse.json({token : `${generateOtp}`})
+        return NextResponse.json({otp : `${generateOtp}`})
     }else {
         return NextResponse.json({message : "Unauthorized"}, {status : 403})
     }
@@ -69,10 +70,18 @@ async function generate_otp_and_send(email: string) {
         where :{email : email},
         data : {otp : otpToken}
     })
-    return otpToken;
+    return randOtp;
 }
 async function sendEmail(message: string, phone_number: String) {
-    throw new Error("Function not implemented."); //send OTP Using Twilio
+    // const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    // const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+    // try {
+    //     const client = twilio(accountSid, authToken);
+    //     const response = await client.
+    // } catch (error) {
+    //     console.error(error);
+    // }
 }
 
 export async function verifyOtp(req : Request){
@@ -93,3 +102,4 @@ export async function verifyOtp(req : Request){
         return NextResponse.json({message : error},{status : 500})
     }
 }
+
