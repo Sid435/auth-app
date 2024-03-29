@@ -37,10 +37,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 ## About the app
 
-This is a auth application which is built using nextJS14 TypeScript
-The JWT is used inorder to implement the security
-PostgreSql is used as backend
-Twilio is used as the message platform
-
-This app is tested using POSTMAN
+- This is a auth application which is built using nextJS14 TypeScript
+- The JWT is used inorder to implement the security
+- PostgreSql is used as backend
+- Twilio is used as the message platform
+- This app is tested using POSTMAN
 
