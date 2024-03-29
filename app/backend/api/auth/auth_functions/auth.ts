@@ -64,7 +64,7 @@ async function generate_otp_and_send(email: string) {
         email:email
     }
     const message = `Your OTP verification code : ${randOtp}`;
-    await sendEmail(message, email);
+    // await sendEmail(message, email);
     const otpToken = jwt.sign(payload, process.env.OTP_SECRET_KEY!, {expiresIn : "5m"});
     await prisma?.user.update({
         where :{email : email},
